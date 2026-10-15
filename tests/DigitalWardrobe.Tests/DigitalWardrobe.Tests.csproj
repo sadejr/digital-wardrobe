@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DigitalWardrobe.Core\DigitalWardrobe.Core.csproj" />
-    <ProjectReference Include="..\DigitalWardrobe.Data\DigitalWardrobe.Data.csproj" />
+    <ProjectReference Include="..\..\src\DigitalWardrobe.Core\DigitalWardrobe.Core.csproj" />
+	<ProjectReference Include="..\..\src\DigitalWardrobe.Data\DigitalWardrobe.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
