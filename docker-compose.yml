@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17
+    container_name: digital-wardrobe-db
+    environment:
+      POSTGRES_DB: digitalwardrobe
+      POSTGRES_USER: wardrobe
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  dbdata:
