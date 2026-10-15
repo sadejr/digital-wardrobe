@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="DigitalWardrobe.Core/DigitalWardrobe.Core.csproj" Id="0cceb0da-99aa-465b-a421-7ff5c404f4c8" />
+  <Project Path="DigitalWardrobe.Data/DigitalWardrobe.Data.csproj" Id="cfb3750f-fcf4-4cc7-aad7-c36f8884cbb2" />
+  <Project Path="DigitalWardrobe.Tests/DigitalWardrobe.Tests.csproj" Id="7f9bd179-391a-480e-81fb-efda49eebd81" />
+  <Project Path="DigitalWardrobe.Web/DigitalWardrobe.Web.csproj" Id="211676a3-2d9c-40ca-ba84-6a262010ab14" />
+</Solution>
