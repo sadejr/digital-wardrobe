@@ -4,7 +4,7 @@ A free, open-source web app for keeping your clothes in a digital wardrobe. Each
 
 ## Status
 
-The first version is still in development. The project setup is finished, and user accounts are being built now.
+The first version is still in development. User accounts are finished, and clothing items with photos are being built now.
 
 ## Tech stack
 
