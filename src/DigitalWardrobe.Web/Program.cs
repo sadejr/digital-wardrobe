@@ -52,6 +52,19 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+if (!app.Configuration.GetValue<bool>("Registration:Enabled"))
+{
+    app.Use(async (context, next) =>
+    {
+        if (context.Request.Path.StartsWithSegments("/Identity/Account/Register"))
+        {
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            return;
+        }
+
+        await next();
+    });
+}
 app.UseRouting();
 
 app.UseAuthentication();
