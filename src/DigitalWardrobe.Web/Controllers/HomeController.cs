@@ -1,6 +1,7 @@
 using DigitalWardrobe.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DigitalWardrobe.Web.Controllers
 {
@@ -11,11 +12,13 @@ namespace DigitalWardrobe.Web.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         public IActionResult Privacy()
         {
             return View();
         }
 
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
