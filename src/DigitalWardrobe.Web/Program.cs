@@ -1,11 +1,15 @@
-using DigitalWardrobe.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
 using DigitalWardrobe.Core.Interfaces;
+using DigitalWardrobe.Core.Models;
+using DigitalWardrobe.Core.Services;
+using DigitalWardrobe.Data;
 using DigitalWardrobe.Data.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Database
 var connectionString = builder.Configuration.GetConnectionString("Default");
 if (string.IsNullOrWhiteSpace(connectionString))
 {
@@ -15,7 +19,8 @@ if (string.IsNullOrWhiteSpace(connectionString))
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
-builder.Services.AddScoped<IClothingItemRepository, ClothingItemRepository>();
+
+// User accounts and login
 builder.Services
     .AddDefaultIdentity<IdentityUser>(options =>
     {
@@ -26,6 +31,7 @@ builder.Services
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
     })
     .AddEntityFrameworkStores<AppDbContext>();
+
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
@@ -33,12 +39,19 @@ builder.Services.AddAuthorization(options =>
         .Build();
 });
 
+// Application services
+var limits = builder.Configuration.GetSection("Limits").Get<WardrobeLimits>() ?? new WardrobeLimits();
+builder.Services.AddSingleton(limits);
+builder.Services.AddScoped<IClothingItemRepository, ClothingItemRepository>();
+builder.Services.AddScoped<ClothingItemService>();
+
+// Pages
+builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
 var app = builder.Build();
+
+// Apply migrations on startup (enabled in Docker only)
 if (app.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup"))
 {
     using var scope = app.Services.CreateScope();
@@ -46,15 +59,16 @@ if (app.Configuration.GetValue<bool>("Database:ApplyMigrationsOnStartup"))
     db.Database.Migrate();
 }
 
-// Configure the HTTP request pipeline.
+// Request pipeline: the order of these steps matters
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+
+// Block the registration page when registration is turned off
 if (!app.Configuration.GetValue<bool>("Registration:Enabled"))
 {
     app.Use(async (context, next) =>
@@ -68,19 +82,17 @@ if (!app.Configuration.GetValue<bool>("Registration:Enabled"))
         await next();
     });
 }
-app.UseRouting();
 
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets().AllowAnonymous();
-
-app.MapRazorPages()
-   .WithStaticAssets();
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
+app.MapRazorPages()
+    .WithStaticAssets();
 
 app.Run();
