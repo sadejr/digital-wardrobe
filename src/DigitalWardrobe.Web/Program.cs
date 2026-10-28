@@ -2,6 +2,8 @@ using DigitalWardrobe.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using DigitalWardrobe.Core.Interfaces;
+using DigitalWardrobe.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Default");
@@ -13,6 +15,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+builder.Services.AddScoped<IClothingItemRepository, ClothingItemRepository>();
 builder.Services
     .AddDefaultIdentity<IdentityUser>(options =>
     {
