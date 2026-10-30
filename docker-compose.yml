@@ -25,6 +25,7 @@ services:
       ConnectionStrings__Default: "Host=db;Port=5432;Database=digitalwardrobe;Username=wardrobe;Password=${POSTGRES_PASSWORD}"
       Database__ApplyMigrationsOnStartup: "true"
       Storage__PhotosPath: /app/photos
+      Registration__Enabled: ${REGISTRATION_ENABLED:-false}
     ports:
       - "8080:8080"
     depends_on:
