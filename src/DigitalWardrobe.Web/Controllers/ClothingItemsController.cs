@@ -100,5 +100,15 @@ public class ClothingItemsController : Controller
             return NotFound();
 
         return RedirectToAction(nameof(Index));
-    }  
+    }
+
+    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Client)]
+    public async Task<IActionResult> Photo(int id)
+    {
+        var stream = await _service.OpenPhotoAsync(id, CurrentUserId);
+        if (stream == null)
+            return NotFound();
+
+        return File(stream, "image/webp");
+    }
 }

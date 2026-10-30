@@ -19,6 +19,17 @@ else
         {
             <div class="col">
                 <div class="card h-100">
+                    @if (item.ImageKey != null)
+                    {
+                        <img src="@Url.Action("Photo", new { id = item.Id, v = item.UpdatedAt.Ticks })"
+                             class="card-img-top wardrobe-photo" alt="@item.Name" loading="lazy" />
+                    }
+                    else
+                    {
+                        <div class="card-img-top wardrobe-photo d-flex align-items-center justify-content-center bg-light text-muted">
+                            No photo
+                        </div>
+                    }
                     <div class="card-body">
                         <h5 class="card-title">
                             <a asp-action="Details" asp-route-id="@item.Id" class="stretched-link text-decoration-none">@item.Name</a>

@@ -5,6 +5,12 @@
 
 <h1>@Model.Name</h1>
 
+@if (Model.ImageKey != null)
+{
+    <img src="@Url.Action("Photo", new { id = Model.Id, v = Model.UpdatedAt.Ticks })"
+         class="img-fluid rounded mb-3" style="max-height: 500px" alt="@Model.Name" />
+}
+
 <dl class="row">
     <dt class="col-sm-3">Brand</dt>
     <dd class="col-sm-9">@(Model.Brand ?? "—")</dd>

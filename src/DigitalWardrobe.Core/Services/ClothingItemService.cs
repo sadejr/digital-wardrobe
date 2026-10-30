@@ -136,6 +136,15 @@ public class ClothingItemService
         return ServiceResult.Ok();
     }
 
+    public async Task<Stream?> OpenPhotoAsync(int id, string userId)
+    {
+        var item = await _items.GetByIdAsync(id, userId);
+        if (item?.ImageKey == null)
+            return null;
+
+        return await _storage.OpenReadAsync(item.ImageKey);
+    }
+
     private async Task<(string? Key, string? Error)> SavePhotoAsync(Stream photo)
     {
         await using var webp = await _images.ToWebPAsync(photo);
