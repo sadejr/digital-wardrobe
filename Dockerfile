@@ -15,5 +15,6 @@ RUN dotnet publish src/DigitalWardrobe.Web/DigitalWardrobe.Web.csproj -c Release
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /app .
+RUN mkdir -p /app/photos && chown $APP_UID:$APP_UID /app/photos
 USER $APP_UID
 ENTRYPOINT ["dotnet", "DigitalWardrobe.Web.dll"]

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using DigitalWardrobe.Data.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,10 @@ var limits = builder.Configuration.GetSection("Limits").Get<WardrobeLimits>() ??
 builder.Services.AddSingleton(limits);
 builder.Services.AddScoped<IClothingItemRepository, ClothingItemRepository>();
 builder.Services.AddScoped<ClothingItemService>();
+var photosPath = Path.Combine(
+    builder.Environment.ContentRootPath,
+    builder.Configuration["Storage:PhotosPath"] ?? "photos");
+builder.Services.AddSingleton<IFileStorage>(new LocalFileStorage(photosPath));
 
 // Pages
 builder.Services.AddControllersWithViews(options =>
