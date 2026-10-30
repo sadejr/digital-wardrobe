@@ -1,0 +1,33 @@
+﻿@model DigitalWardrobe.Core.Entities.ClothingItem
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<h1>@Model.Name</h1>
+
+@if (Model.ImageKey != null)
+{
+    <img src="@Url.Action("Photo", new { id = Model.Id, v = Model.UpdatedAt.Ticks })"
+         class="img-fluid rounded mb-3" style="max-height: 500px" alt="@Model.Name" />
+}
+
+<dl class="row">
+    <dt class="col-sm-3">Brand</dt>
+    <dd class="col-sm-9">@(Model.Brand ?? "—")</dd>
+
+    <dt class="col-sm-3">Category</dt>
+    <dd class="col-sm-9">@(Model.Category?.ToString() ?? "—")</dd>
+
+    <dt class="col-sm-3">Colours</dt>
+    <dd class="col-sm-9">@(Model.Colours.Count > 0 ? string.Join(", ", Model.Colours) : "—")</dd>
+
+    <dt class="col-sm-3">Seasons</dt>
+    <dd class="col-sm-9">@(Model.Seasons.Count > 0 ? string.Join(", ", Model.Seasons) : "—")</dd>
+
+    <dt class="col-sm-3">Added</dt>
+    <dd class="col-sm-9">@Model.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Delete</a>
+<a asp-action="Index" class="btn btn-link">Back to wardrobe</a>

@@ -1,0 +1,13 @@
+﻿@model DigitalWardrobe.Core.Entities.ClothingItem
+@{
+    ViewData["Title"] = "Delete item";
+}
+
+<h1>Delete item</h1>
+
+<p>Are you sure you want to delete <strong>@Model.Name</strong>? This cannot be undone.</p>
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-link">Cancel</a>
+</form>
