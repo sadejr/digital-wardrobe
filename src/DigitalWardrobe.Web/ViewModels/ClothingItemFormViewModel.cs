@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DigitalWardrobe.Core.Enums;
 using DigitalWardrobe.Core.Models;
+using DigitalWardrobe.Core.Entities;
 
 namespace DigitalWardrobe.Web.ViewModels;
 
@@ -28,5 +29,14 @@ public class ClothingItemFormViewModel
         Category = Category,
         Colours = (ColoursText ?? string.Empty).Split(',').ToList(),
         Seasons = Seasons
+    };
+
+    public static ClothingItemFormViewModel FromEntity(ClothingItem item) => new()
+    {
+        Name = item.Name,
+        Brand = item.Brand,
+        Category = item.Category,
+        ColoursText = string.Join(", ", item.Colours),
+        Seasons = item.Seasons.ToList()
     };
 }
