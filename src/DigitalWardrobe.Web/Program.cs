@@ -6,6 +6,7 @@ using DigitalWardrobe.Data.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +47,10 @@ builder.Services.AddScoped<IClothingItemRepository, ClothingItemRepository>();
 builder.Services.AddScoped<ClothingItemService>();
 
 // Pages
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+}); 
 builder.Services.AddRazorPages();
 
 var app = builder.Build();

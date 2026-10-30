@@ -1,0 +1,42 @@
+﻿@using DigitalWardrobe.Core.Enums
+@model DigitalWardrobe.Web.ViewModels.ClothingItemFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="mb-3">
+    <label asp-for="Name" class="form-label"></label>
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Brand" class="form-label"></label>
+    <input asp-for="Brand" class="form-control" />
+    <span asp-validation-for="Brand" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Category" class="form-label"></label>
+    <select asp-for="Category" asp-items="Html.GetEnumSelectList<Category>()" class="form-select">
+        <option value="">(none)</option>
+    </select>
+</div>
+
+<div class="mb-3">
+    <label asp-for="ColoursText" class="form-label"></label>
+    <input asp-for="ColoursText" class="form-control" placeholder="e.g. black, white" />
+    <div class="form-text">Separate several colours with commas.</div>
+    <span asp-validation-for="ColoursText" class="text-danger"></span>
+</div>
+
+<fieldset class="mb-3">
+    <legend class="form-label fs-6">Seasons</legend>
+    @foreach (var season in Enum.GetValues<Season>())
+    {
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="Seasons" value="@season"
+                   id="season-@season" checked="@Model.Seasons.Contains(season)" />
+            <label class="form-check-label" for="season-@season">@season</label>
+        </div>
+    }
+</fieldset>
