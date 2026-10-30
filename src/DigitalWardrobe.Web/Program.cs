@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using DigitalWardrobe.Data.Storage;
+using DigitalWardrobe.Data.Images;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,7 @@ var photosPath = Path.Combine(
     builder.Environment.ContentRootPath,
     builder.Configuration["Storage:PhotosPath"] ?? "photos");
 builder.Services.AddSingleton<IFileStorage>(new LocalFileStorage(photosPath));
+builder.Services.AddSingleton<IImageProcessor, SkiaImageProcessor>();
 
 // Pages
 builder.Services.AddControllersWithViews(options =>
