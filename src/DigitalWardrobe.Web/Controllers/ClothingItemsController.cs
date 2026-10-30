@@ -28,6 +28,7 @@ public class ClothingItemsController : Controller
         return View(new ClothingItemFormViewModel());
     }
 
+    [RequestSizeLimit(12 * 1024 * 1024)]
     [HttpPost]
     public async Task<IActionResult> Create(ClothingItemFormViewModel model)
     {
@@ -62,6 +63,7 @@ public class ClothingItemsController : Controller
         return View(ClothingItemFormViewModel.FromEntity(item));
     }
 
+    [RequestSizeLimit(12 * 1024 * 1024)]
     [HttpPost]
     public async Task<IActionResult> Edit(int id, ClothingItemFormViewModel model)
     {

@@ -13,4 +13,10 @@ public class ClothingItemInput
     public List<string> Colours { get; set; } = new();
 
     public List<Season> Seasons { get; set; } = new();
+
+    public Stream? Photo { get; set; }
+
+    public long PhotoSize { get; set; }
+
+    public bool RemovePhoto { get; set; }
 }

@@ -7,11 +7,19 @@ namespace DigitalWardrobe.Core.Services;
 public class ClothingItemService
 {
     private readonly IClothingItemRepository _items;
+    private readonly IFileStorage _storage;
+    private readonly IImageProcessor _images;
     private readonly WardrobeLimits _limits;
 
-    public ClothingItemService(IClothingItemRepository items, WardrobeLimits limits)
+    public ClothingItemService(
+        IClothingItemRepository items,
+        IFileStorage storage,
+        IImageProcessor images,
+        WardrobeLimits limits)
     {
         _items = items;
+        _storage = storage;
+        _images = images;
         _limits = limits;
     }
 
@@ -31,16 +39,38 @@ public class ClothingItemService
         if (count >= _limits.MaxItemsPerUser)
             return ServiceResult.Invalid($"You can have at most {_limits.MaxItemsPerUser} items.");
 
+        string? newKey = null;
+        if (input.Photo != null)
+        {
+            var photo = await SavePhotoAsync(input.Photo);
+            if (photo.Error != null)
+                return ServiceResult.Invalid(photo.Error);
+
+            newKey = photo.Key;
+        }
+
         var now = DateTime.UtcNow;
         var item = new ClothingItem
         {
             UserId = userId,
+            ImageKey = newKey,
             CreatedAt = now,
             UpdatedAt = now
         };
         Apply(input, item);
 
-        await _items.AddAsync(item);
+        try
+        {
+            await _items.AddAsync(item);
+        }
+        catch
+        {
+            if (newKey != null)
+                await _storage.DeleteAsync(newKey);
+
+            throw;
+        }
+
         return ServiceResult.Ok();
     }
 
@@ -54,10 +84,41 @@ public class ClothingItemService
         if (error != null)
             return ServiceResult.Invalid(error);
 
+        var oldKey = item.ImageKey;
+        string? newKey = null;
+
+        if (input.Photo != null)
+        {
+            var photo = await SavePhotoAsync(input.Photo);
+            if (photo.Error != null)
+                return ServiceResult.Invalid(photo.Error);
+
+            newKey = photo.Key;
+            item.ImageKey = newKey;
+        }
+        else if (input.RemovePhoto)
+        {
+            item.ImageKey = null;
+        }
+
         Apply(input, item);
         item.UpdatedAt = DateTime.UtcNow;
 
-        await _items.UpdateAsync(item);
+        try
+        {
+            await _items.UpdateAsync(item);
+        }
+        catch
+        {
+            if (newKey != null)
+                await _storage.DeleteAsync(newKey);
+
+            throw;
+        }
+
+        if (oldKey != null && oldKey != item.ImageKey)
+            await _storage.DeleteAsync(oldKey);
+
         return ServiceResult.Ok();
     }
 
@@ -68,10 +129,24 @@ public class ClothingItemService
             return ServiceResult.NotFound();
 
         await _items.DeleteAsync(item);
+
+        if (item.ImageKey != null)
+            await _storage.DeleteAsync(item.ImageKey);
+
         return ServiceResult.Ok();
     }
 
-    private static string? Validate(ClothingItemInput input)
+    private async Task<(string? Key, string? Error)> SavePhotoAsync(Stream photo)
+    {
+        await using var webp = await _images.ToWebPAsync(photo);
+        if (webp == null)
+            return (null, "The photo must be a JPEG, PNG or WebP image.");
+
+        var key = await _storage.SaveAsync(webp, ".webp");
+        return (key, null);
+    }
+
+    private string? Validate(ClothingItemInput input)
     {
         if (string.IsNullOrWhiteSpace(input.Name))
             return "Name is required.";
@@ -81,6 +156,10 @@ public class ClothingItemService
 
         if (input.Seasons.Any(s => !Enum.IsDefined(s)))
             return "Unknown season.";
+
+        var maxBytes = _limits.MaxPhotoSizeMb * 1024L * 1024L;
+        if (input.Photo != null && input.PhotoSize > maxBytes)
+            return $"The photo must be at most {_limits.MaxPhotoSizeMb} MB.";
 
         return null;
     }

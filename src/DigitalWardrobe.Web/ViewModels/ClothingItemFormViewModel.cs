@@ -2,6 +2,7 @@
 using DigitalWardrobe.Core.Enums;
 using DigitalWardrobe.Core.Models;
 using DigitalWardrobe.Core.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace DigitalWardrobe.Web.ViewModels;
 
@@ -22,13 +23,24 @@ public class ClothingItemFormViewModel
 
     public List<Season> Seasons { get; set; } = new();
 
+    [Display(Name = "Photo")]
+    public IFormFile? Photo { get; set; }
+
+    [Display(Name = "Remove current photo")]
+    public bool RemovePhoto { get; set; }
+
+    public bool HasPhoto { get; set; }
+
     public ClothingItemInput ToInput() => new()
     {
         Name = Name,
         Brand = Brand,
         Category = Category,
         Colours = (ColoursText ?? string.Empty).Split(',').ToList(),
-        Seasons = Seasons
+        Seasons = Seasons,
+        Photo = Photo?.OpenReadStream(),
+        PhotoSize = Photo?.Length ?? 0,
+        RemovePhoto = RemovePhoto
     };
 
     public static ClothingItemFormViewModel FromEntity(ClothingItem item) => new()
@@ -37,6 +49,7 @@ public class ClothingItemFormViewModel
         Brand = item.Brand,
         Category = item.Category,
         ColoursText = string.Join(", ", item.Colours),
-        Seasons = item.Seasons.ToList()
+        Seasons = item.Seasons.ToList(),
+        HasPhoto = item.ImageKey != null
     };
 }

@@ -40,3 +40,19 @@
         </div>
     }
 </fieldset>
+
+<div class="mb-3">
+    <label asp-for="Photo" class="form-label"></label>
+    <input asp-for="Photo" type="file" accept="image/jpeg,image/png,image/webp" class="form-control" />
+    <div class="form-text">JPEG, PNG or WebP, up to 10 MB. On a phone, you can also take a new picture.</div>
+    <span asp-validation-for="Photo" class="text-danger"></span>
+</div>
+
+<input type="hidden" asp-for="HasPhoto" />
+@if (Model.HasPhoto)
+{
+    <div class="form-check mb-3">
+        <input asp-for="RemovePhoto" class="form-check-input" />
+        <label asp-for="RemovePhoto" class="form-check-label"></label>
+    </div>
+}
